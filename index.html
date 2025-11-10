@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إنشاء حساب - E-duct</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --accent-color: #1abc9c;
+            --light-color: #ecf0f1;
+            --dark-color: #34495e;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --facebook-color: #3b5998;
+            --twitter-color: #1da1f2;
+            --github-color: #333;
+            --linkedin-color: #0077b5;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        /* تصميم الشريط العلوي */
+        .navbar {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 0.8rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: slideDown 0.5s ease-out;
+        }
+        
+        @keyframes slideDown {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo h1 {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 1.5rem;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: var(--dark-color);
+            font-weight: 500;
+            transition: color 0.3s;
+            position: relative;
+        }
+        
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            right: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary-color);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+        
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+        
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            position: relative;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        
+        .user-avatar:hover {
+            transform: scale(1.1);
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: var(--danger-color);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulse 2s infinite;
+        }
+        
+        /* تصميم صفحة التسجيل */
+        .signup-container {
+            display: flex;
+            min-height: calc(100vh - 70px);
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .signup-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 30px 30px;
+            animation: float 20s infinite linear;
+            z-index: 0;
+        }
+        
+        @keyframes float {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            100% { transform: translate(-30px, -30px) rotate(360deg); }
+        }
+        
+        .signup-card {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 500px;
+            position: relative;
+            z-index: 1;
+            transform: translateY(20px);
+            opacity: 0;
+            animation: slideUpFade 0.8s ease-out forwards;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .signup-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        @keyframes slideUpFade {
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .signup-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .signup-header h2 {
+            color: var(--dark-color);
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .signup-header h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            right: 50%;
+            transform: translateX(50%);
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(to right, var(--primary-color), var(--accent-color));
+            border-radius: 2px;
+        }
+        
+        .signup-header p {
+            color: #777;
+            margin-top: 1rem;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group {
+            flex: 1;
+            position: relative;
+        }
+        
+        .input-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--dark-color);
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 15px 45px 15px 15px;
+            border: 2px solid #e1e1e1;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s;
+            background-color: #f9f9f9;
+        }
+        
+        .input-group i {
+            position: absolute;
+            right: 15px;
+            top: 42px;
+            color: #888;
+            transition: all 0.3s;
+        }
+        
+        .input-group input:focus, .input-group select:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+            padding-right: 50px;
+            background-color: white;
+        }
+        
+        .input-group input:focus + i, .input-group select:focus + i {
+            color: var(--primary-color);
+            transform: scale(1.2);
+        }
+        
+        .input-group input:valid + i, .input-group select:valid + i {
+            color: var(--success-color);
+        }
+        
+        .password-toggle {
+            position: absolute;
+            left: 15px;
+            top: 42px;
+            color: #888;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .password-toggle:hover {
+            color: var(--primary-color);
+        }
+        
+        .terms-conditions {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .terms-conditions input {
+            margin-top: 0.2rem;
+            accent-color: var(--primary-color);
+        }
+        
+        .terms-conditions a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        .terms-conditions a:hover {
+            text-decoration: underline;
+        }
+        
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(to right, var(--primary-color), var(--accent-color));
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: all 0.5s;
+        }
+        
+        .submit-btn:hover::before {
+            left: 100%;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+        
+        .signup-footer {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: #777;
+            font-size: 0.9rem;
+        }
+        
+        .signup-footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .signup-footer a:hover {
+            text-decoration: underline;
+        }
+        
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 1.5rem 0;
+        }
+        
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background-color: #e1e1e1;
+        }
+        
+        .divider span {
+            padding: 0 1rem;
+            color: #777;
+            font-size: 0.9rem;
+        }
+        
+        .social-signup {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .social-btn {
+            padding: 12px;
+            border: 1px solid #e1e1e1;
+            border-radius: 10px;
+            background-color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        
+        .social-btn.google {
+            color: #DB4437;
+        }
+        
+        .social-btn.facebook {
+            color: var(--facebook-color);
+        }
+        
+        .social-btn.twitter {
+            color: var(--twitter-color);
+        }
+        
+        .social-btn.github {
+            color: var(--github-color);
+        }
+        
+        .social-btn.linkedin {
+            color: var(--linkedin-color);
+        }
+        
+        .social-btn.apple {
+            color: #000;
+        }
+        
+        .social-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .success-message {
+            display: none;
+            text-align: center;
+            padding: 3rem 2rem;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            position: relative;
+            z-index: 1;
+            animation: zoomIn 0.5s ease-out;
+        }
+        
+        @keyframes zoomIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        
+        .success-icon {
+            font-size: 80px;
+            color: var(--success-color);
+            margin-bottom: 1.5rem;
+            animation: checkmark 0.5s ease-out 0.2s both;
+        }
+        
+        @keyframes checkmark {
+            0% { transform: scale(0); opacity: 0; }
+            70% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(1); }
+        }
+        
+        .success-message h2 {
+            color: var(--dark-color);
+            margin-bottom: 1rem;
+            font-size: 1.8rem;
+            animation: fadeInUp 0.5s ease-out 0.3s both;
+        }
+        
+        .success-message p {
+            color: #666;
+            line-height: 1.6;
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            animation: fadeInUp 0.5s ease-out 0.4s both;
+        }
+        
+        @keyframes fadeInUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .back-to-signup {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: var(--light-color);
+            color: var(--dark-color);
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        
+        .back-to-signup:hover {
+            background-color: #dde4e6;
+        }
+        
+        .floating-elements {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+        }
+        
+        .floating-element {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 50%;
+            animation: floatElement 15s infinite linear;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        @keyframes floatElement {
+            0% { transform: translateY(0) rotate(0deg); }
+            100% { transform: translateY(-1000px) rotate(720deg); }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .progress-bar {
+            height: 6px;
+            background-color: var(--light-color);
+            border-radius: 3px;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(to right, var(--primary-color), var(--accent-color));
+            border-radius: 3px;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .password-strength {
+            margin-top: 0.5rem;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .strength-text {
+            font-weight: 500;
+        }
+        
+        .strength-weak {
+            color: var(--danger-color);
+        }
+        
+        .strength-medium {
+            color: var(--warning-color);
+        }
+        
+        .strength-strong {
+            color: var(--success-color);
+        }
+        
+        /* تصميم متجاوب */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 0.8rem 1rem;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .signup-card {
+                padding: 2rem 1.5rem;
+            }
+            
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+            
+            .social-signup {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .signup-container {
+                padding: 1rem;
+            }
+            
+            .signup-card {
+                padding: 1.5rem 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- الشريط العلوي -->
+    <nav class="navbar">
+        <div class="logo">
+            <h1>E-duct</h1>
+        </div>
+        
+        <ul class="nav-links">
+            <li><a href="#">الرئيسية</a></li>
+            <li><a href="#">الفصول الدراسية</a></li>
+            <li><a href="#">المقررات</a></li>
+            <li><a href="#">التقويم</a></li>
+            <li><a href="#">المساعدة</a></li>
+        </ul>
+        
+        <div class="user-menu">
+            <div class="notification-badge">3</div>
+            <div class="user-avatar">م</div>
+        </div>
+    </nav>
+    
+    <!-- محتوى التسجيل -->
+    <div class="signup-container">
+        <div class="floating-elements" id="floatingElements"></div>
+        
+        <!-- نموذج التسجيل -->
+        <div class="signup-card" id="signupForm">
+            <div class="signup-header">
+                <h2>إنشاء حساب جديد</h2>
+                <p>انضم إلى منصة E-duct للتعلم الإلكتروني</p>
+            </div>
+            
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            
+            <form id="signupFormElement" action="https://formspree.io/f/mwpakejo" method="POST">
+                <div class="form-row">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <label for="firstName">الاسم الأول</label>
+                            <input type="text" id="firstName" name="firstName" required placeholder="أدخل اسمك الأول">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <div class="input-group">
+                            <label for="lastName">اسم العائلة</label>
+                            <input type="text" id="lastName" name="lastName" required placeholder="أدخل اسم العائلة">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label for="email">البريد الإلكتروني</label>
+                    <input type="email" id="email" name="email" required placeholder="أدخل بريدك الإلكتروني">
+                    <i class="fas fa-envelope"></i>
+                </div>
+                
+                <div class="input-group">
+                    <label for="phone">رقم الهاتف</label>
+                    <input type="tel" id="phone" name="phone" required placeholder="أدخل رقم هاتفك">
+                    <i class="fas fa-phone"></i>
+                </div>
+                
+                <div class="input-group">
+                    <label for="userType">نوع المستخدم</label>
+                    <select id="userType" name="userType" required>
+                        <option value="">اختر نوع المستخدم</option>
+                        <option value="student">طالب</option>
+                        <option value="teacher">معلم</option>
+                        <option value="parent">ولي أمر</option>
+                    </select>
+                    <i class="fas fa-user-tag"></i>
+                </div>
+                
+                <div class="input-group">
+                    <label for="password">كلمة المرور</label>
+                    <input type="password" id="password" name="password" required placeholder="أنشئ كلمة مرور قوية">
+                    <i class="fas fa-lock"></i>
+                    <span class="password-toggle" id="passwordToggle">
+                        <i class="fas fa-eye"></i>
+                    </span>
+                    <div class="password-strength">
+                        <span>قوة كلمة المرور:</span>
+                        <span class="strength-text" id="passwordStrength">ضعيفة</span>
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label for="confirmPassword">تأكيد كلمة المرور</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" required placeholder="أعد إدخال كلمة المرور">
+                    <i class="fas fa-lock"></i>
+                    <span class="password-toggle" id="confirmPasswordToggle">
+                        <i class="fas fa-eye"></i>
+                    </span>
+                </div>
+                
+                <div class="terms-conditions">
+                    <input type="checkbox" id="terms" required>
+                    <label for="terms">أوافق على <a href="#">شروط الخدمة</a> و <a href="#">سياسة الخصوصية</a></label>
+                </div>
+                
+                <button type="submit" class="submit-btn">إنشاء حساب</button>
+                
+                <div class="divider">
+                    <span>أو سجل باستخدام</span>
+                </div>
+                
+                
+            </form>
+            
+            <div class="signup-footer">
+                لديك حساب بالفعل؟ <a href="#">سجل الدخول</a>
+            </div>
+        </div>
+        
+        <!-- رسالة النجاح -->
+        <div class="success-message" id="successMessage">
+            <div class="success-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h2>تم إنشاء حسابك بنجاح!</h2>
+            <p>Thanks! for information we will send a notification if it accept</p>
+            <a href="#" class="back-to-signup" id="backToSignup">العودة للتسجيل</a>
+        </div>
+    </div>
+
+    <script>
+        // إنشاء العناصر العائمة في الخلفية
+        function createFloatingElements() {
+            const container = document.getElementById('floatingElements');
+            const colors = [
+                'rgba(52, 152, 219, 0.2)', 
+                'rgba(26, 188, 156, 0.2)', 
+                'rgba(155, 89, 182, 0.2)',
+                'rgba(241, 196, 15, 0.2)',
+                'rgba(230, 126, 34, 0.2)'
+            ];
+            
+            for (let i = 0; i < 20; i++) {
+                const element = document.createElement('div');
+                element.classList.add('floating-element');
+                
+                const size = Math.random() * 80 + 20;
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                
+                element.style.width = `${size}px`;
+                element.style.height = `${size}px`;
+                element.style.background = color;
+                element.style.left = `${Math.random() * 100}%`;
+                element.style.top = `${Math.random() * 100 + 100}%`;
+                element.style.animationDuration = `${Math.random() * 20 + 15}s`;
+                element.style.animationDelay = `${Math.random() * 5}s`;
+                
+                container.appendChild(element);
+            }
+        }
+        
+        // تبديل رؤية كلمة المرور
+        document.getElementById('passwordToggle').addEventListener('click', function() {
+            const passwordInput = document.getElementById('password');
+            const icon = this.querySelector('i');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        });
+        
+        document.getElementById('confirmPasswordToggle').addEventListener('click', function() {
+            const passwordInput = document.getElementById('confirmPassword');
+            const icon = this.querySelector('i');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        });
+        
+        // التحقق من قوة كلمة المرور
+        document.getElementById('password').addEventListener('input', function() {
+            const password = this.value;
+            const strengthText = document.getElementById('passwordStrength');
+            const progressFill = document.getElementById('progressFill');
+            
+            let strength = 0;
+            let feedback = '';
+            
+            // التحقق من طول كلمة المرور
+            if (password.length >= 8) strength += 25;
+            
+            // التحقق من وجود أحرف كبيرة وصغيرة
+            if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength += 25;
+            
+            // التحقق من وجود أرقام
+            if (/\d/.test(password)) strength += 25;
+            
+            // التحقق من وجود رموز خاصة
+            if (/[^A-Za-z0-9]/.test(password)) strength += 25;
+            
+            // تحديث شريط التقدم
+            progressFill.style.width = `${strength}%`;
+            
+            // تحديث نص قوة كلمة المرور
+            if (strength < 50) {
+                strengthText.textContent = 'ضعيفة';
+                strengthText.className = 'strength-text strength-weak';
+                progressFill.style.background = 'linear-gradient(to right, var(--danger-color), var(--warning-color))';
+            } else if (strength < 75) {
+                strengthText.textContent = 'متوسطة';
+                strengthText.className = 'strength-text strength-medium';
+                progressFill.style.background = 'linear-gradient(to right, var(--warning-color), var(--success-color))';
+            } else {
+                strengthText.textContent = 'قوية';
+                strengthText.className = 'strength-text strength-strong';
+                progressFill.style.background = 'linear-gradient(to right, var(--success-color), var(--accent-color))';
+            }
+        });
+        
+        // التحقق من تطابق كلمتي المرور
+        document.getElementById('confirmPassword').addEventListener('input', function() {
+            const password = document.getElementById('password').value;
+            const confirmPassword = this.value;
+            
+            if (confirmPassword && password !== confirmPassword) {
+                this.style.borderColor = 'var(--danger-color)';
+                this.style.boxShadow = '0 0 0 3px rgba(231, 76, 60, 0.1)';
+            } else {
+                this.style.borderColor = '';
+                this.style.boxShadow = '';
+            }
+        });
+        
+        // معالجة إرسال النموذج
+        document.getElementById('signupFormElement').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // الحصول على قيم المدخلات
+            const firstName = document.getElementById('firstName').value;
+            const lastName = document.getElementById('lastName').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            const userType = document.getElementById('userType').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const terms = document.getElementById('terms').checked;
+            
+            // التحقق من صحة البيانات
+            if(firstName && lastName && email && phone && userType && password && confirmPassword && terms) {
+                if (password !== confirmPassword) {
+                    alert('كلمتا المرور غير متطابقتين');
+                    return;
+                }
+                
+                // تأثير اهتزاز للنموذج
+                document.getElementById('signupForm').style.animation = 'shake 0.5s ease-in-out';
+                
+                // إخفاء نموذج التسجيل بعد التأثير
+                setTimeout(() => {
+                    document.getElementById('signupForm').style.display = 'none';
+                    document.getElementById('successMessage').style.display = 'block';
+                }, 500);
+                
+                // إعادة تعيين تأثير الاهتزاز
+                setTimeout(() => {
+                    document.getElementById('signupForm').style.animation = '';
+                }, 600);
+            } else {
+                // تأثير اهتزاز في حالة عدم إدخال البيانات
+                document.getElementById('signupForm').style.animation = 'shake 0.5s ease-in-out';
+                setTimeout(() => {
+                    document.getElementById('signupForm').style.animation = '';
+                }, 600);
+            }
+        });
+        
+        // العودة إلى نموذج التسجيل
+        document.getElementById('backToSignup').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('successMessage').style.display = 'none';
+            document.getElementById('signupForm').style.display = 'block';
+        });
+        
+        // تكامل وسائل التواصل الاجتماعي
+        document.getElementById('googleSignUp').addEventListener('click', function() {
+            // محاكاة تسجيل الدخول بجوجل
+            simulateSocialLogin('جوجل');
+        });
+        
+        document.getElementById('facebookSignUp').addEventListener('click', function() {
+            // محاكاة تسجيل الدخول بفيسبوك
+            simulateSocialLogin('فيسبوك');
+        });
+        
+        document.getElementById('twitterSignUp').addEventListener('click', function() {
+            // محاكاة تسجيل الدخول بتويتر
+            simulateSocialLogin('تويتر');
+        });
+        
+        document.getElementById('githubSignUp').addEventListener('click', function() {
+            // محاكاة تسجيل الدخول بجيت هاب
+            simulateSocialLogin('جيت هاب');
+        });
+        
+        document.getElementById('linkedinSignUp').addEventListener('click', function() {
+            // محاكاة تسجيل الدخول بلينكد إن
+            simulateSocialLogin('لينكد إن');
+        });
+        
+        document.getElementById('appleSignUp').addEventListener('click', function() {
+            // محاكاة تسجيل الدخول بأبل
+            simulateSocialLogin('أبل');
+        });
+        
+        function simulateSocialLogin(provider) {
+            // تأثير تحميل
+            const button = event.currentTarget;
+            const originalText = button.innerHTML;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التحميل...';
+            button.disabled = true;
+            
+            // محاكاة عملية تسجيل الدخول
+            setTimeout(() => {
+                button.innerHTML = originalText;
+                button.disabled = false;
+                
+                // عرض رسالة نجاح
+                document.getElementById('signupForm').style.display = 'none';
+                document.getElementById('successMessage').style.display = 'block';
+                
+                // تحديث رسالة النجاح
+                const successMessage = document.querySelector('#successMessage p');
+                successMessage.textContent = `تم التسجيل بنجاح باستخدام ${provider}! Thanks! for information we will send a notification if it accept`;
+            }, 2000);
+        }
+        
+        // إضافة تأثير اهتزاز للعناصر
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+                20%, 40%, 60%, 80% { transform: translateX(5px); }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // تهيئة العناصر العائمة عند تحميل الصفحة
+        window.addEventListener('load', createFloatingElements);
+        
+        // تأثيرات إضافية للحقول عند التركيز
+        document.querySelectorAll('input, select').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.classList.add('focused');
+            });
+            
+            input.addEventListener('blur', function() {
+                if (!this.value) {
+                    this.parentElement.classList.remove('focused');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
